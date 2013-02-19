@@ -1,0 +1,52 @@
+import pymel.all as pm
+import maya.cmds as cmds
+
+class JointRotate(object):  ## inherit from object by default
+  def __init__(self):
+    self.ui = JointRotateUi(self)
+  def rotateJoint( self, rotateX, rotateY, rotateZ, rotateRelative=False ):
+    objs = cmds.ls( selection=True )
+    for i in objs:
+      cmds.rotate( rotateX, rotateY, rotateZ , i + ".rotateAxis", os=True, relative=rotateRelative  )
+
+class JointRotateUi(object):
+  def __init__(self, parentRef):
+    self.parentRef = parentRef
+    self.win = pm.window( title="Joint Rotate")
+    self.col = pm.columnLayout()
+    self.row1 = pm.rowColumnLayout(
+      width = 200, 
+      numberOfColumns=2 
+      )
+    self.rotateXText = pm.text(
+      label="X rotate:",
+      parent=self.row1 )
+    self.rotateXField = pm.intField(
+      parent=self.row1 )
+    self.rotateYText = pm.text(
+      label="Y rotate:",
+      parent=self.row1 )
+    self.rotateYField = pm.intField(
+      parent=self.row1 )
+    self.rotateZText = pm.text(
+      label="Z rotate:",
+      parent=self.row1 )
+    self.rotateZField = pm.intField(
+      parent=self.row1 )
+    self.button = pm.button(
+      label="Rotate Joints",
+      width=200,
+      command = lambda x: parentRef.rotateJoint(
+         self.rotateXField.getValue() ,self.rotateYField.getValue() ,self.rotateZField.getValue()   ),
+         parent=self.col )
+    self.button = pm.button(
+      label="Rotate Joints Relative",
+      width=200,
+      command = lambda x: parentRef.rotateJoint(
+         self.rotateXField.getValue() ,self.rotateYField.getValue() ,self.rotateZField.getValue(), rotateRelative=True   ),
+         parent=self.col )
+    self.win.show()
+    self.win.setWidth(200)
+    self.win.setHeight(50)
+
+JointRotate()
